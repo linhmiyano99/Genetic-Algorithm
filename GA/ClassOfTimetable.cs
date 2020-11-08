@@ -18,5 +18,13 @@ namespace GA
             this.lesson = lesson;
             this.idSubject = idSubject;
         }
+
+        public ClassOfTimetable()
+        {
+            this.idClass = null;
+            this.idLecture = null;
+            this.lesson = 0;
+            this.idSubject = null;
+        }
     }
 }

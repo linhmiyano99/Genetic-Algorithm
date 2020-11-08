@@ -1,15 +1,16 @@
-﻿using System;
+﻿using GA;
+using System;
 
-public class DNA<T>
+public class DNA
 {
 	/*
 	 * A gene is a region of DNA that encodes function. A chromosome consists of a long strand of DNA containing 
 	 */
-	public T[] Genes { get; private set; }
+	public ClassOfTimetable[] Genes { get; private set; }
 	public float Fitness { get; private set; }
 
 	private Random random;
-	private Func<T> getRandomGene;
+	private Func<ClassOfTimetable> getRandomGene;
 	private Func<int, float> fitnessFunction;
 
 
@@ -20,18 +21,21 @@ public class DNA<T>
 	 * fitnessFunction: 
 	 * bool shouldInitGenes: decide generate genes or not
 	 * */
-	public DNA(int size, Random random, Func<T> getRandomGene, Func<int, float> fitnessFunction, bool shouldInitGenes = true)
+	public DNA(int size, Random random, Func<ClassOfTimetable> getRandomGene, Func<int, float> fitnessFunction, bool shouldInitGenes = true)
 	{
-		Genes = new T[size];
+		Genes = new ClassOfTimetable[size];
 		this.random = random;
 		this.getRandomGene = getRandomGene;
 		this.fitnessFunction = fitnessFunction;
 
 		if (shouldInitGenes)
 		{
-			for (int i = 0; i < Genes.Length; i++)
+			Genes[0] = new ClassOfTimetable(idClass: "SH-1", idLecture: "6", lesson: 2, idSubject: "School Activity");
+			Genes[Genes.Length - 1] = new ClassOfTimetable(idClass: "SH-1", idLecture: "6", lesson: 2, idSubject: "Classroom Activity");
+			for (int i = 1; i < Genes.Length - 1; i++)
 			{
 				Genes[i] = getRandomGene();
+
 			}
 		}
 	}
@@ -51,9 +55,9 @@ public class DNA<T>
 	 * return a new object of type DNA by joining this object with another one (return child of mother and father)
 	 * */
 
-	public DNA<T> Crossover(DNA<T> otherParent)
+	public DNA Crossover(DNA otherParent)
 	{
-		DNA<T> child = new DNA<T>(Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
+		DNA child = new DNA(Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
 
 		for (int i = 0; i < Genes.Length; i++)
 		{
@@ -68,7 +72,7 @@ public class DNA<T>
 	 */
 	public void Mutate(float mutationRate)
 	{
-		for (int i = 0; i < Genes.Length; i++)
+		for (int i = 1; i < Genes.Length - 1; i++)
 		{
 			if (random.NextDouble() < mutationRate)
 			{

@@ -1,41 +1,43 @@
-﻿using System;
+﻿using GA;
+using System;
 using System.Collections.Generic;
 
-public class GeneticAlgorithm<T>
+public class GeneticAlgorithm
 {
-	public List<DNA<T>> Population { get; private set; }
+	public List<DNA> Population { get; private set; }
 	public int Generation { get; private set; }
 	public float BestFitness { get; private set; }
-	public T[] BestGenes { get; private set; }
+	public ClassOfTimetable[] BestGenes { get;  set; }
 
 	public int Elitism;
 	public float MutationRate;
 
-	private List<DNA<T>> newPopulation;
+	private List<DNA> newPopulation;
 	private Random random;
 	public  float fitnessSum;
 	private int dnaSize;
-	private Func<T> getRandomGene;
+	private Func<ClassOfTimetable> getRandomGene;
 	private Func<int, float> fitnessFunction;
+	public bool isStop = false;
 
-	public GeneticAlgorithm(int populationSize, int dnaSize, Random random, Func<T> getRandomGene, Func<int, float> fitnessFunction,
+	public GeneticAlgorithm(int populationSize, int dnaSize, Random random, Func<ClassOfTimetable> getRandomGene, Func<int, float> fitnessFunction,
 		int elitism, float mutationRate = 0.01f)
 	{
 		Generation = 1;
 		Elitism = elitism;
 		MutationRate = mutationRate;
-		Population = new List<DNA<T>>(populationSize);
-		newPopulation = new List<DNA<T>>(populationSize);
+		Population = new List<DNA>(populationSize);
+		newPopulation = new List<DNA>(populationSize);
 		this.random = random;
 		this.dnaSize = dnaSize;
 		this.getRandomGene = getRandomGene;
 		this.fitnessFunction = fitnessFunction;
 
-		BestGenes = new T[dnaSize];
+		BestGenes = new ClassOfTimetable[dnaSize];
 
 		for (int i = 0; i < populationSize; i++)
 		{
-			Population.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
+			Population.Add(new DNA(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
 		}
 	}
 
@@ -82,10 +84,10 @@ public class GeneticAlgorithm<T>
 			}
 			else if (i < Population.Count || crossoverNewDNA)
 			{
-				DNA<T> parent1 = ChooseParent();
-				DNA<T> parent2 = ChooseParent();
+				DNA parent1 = ChooseParent();
+				DNA parent2 = ChooseParent();
 
-				DNA<T> child = parent1.Crossover(parent2);
+				DNA child = parent1.Crossover(parent2);
 
 				child.Mutate(MutationRate);
 
@@ -93,11 +95,11 @@ public class GeneticAlgorithm<T>
 			}
 			else
 			{
-				newPopulation.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
+				newPopulation.Add(new DNA(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
 			}
 		}
 
-		List<DNA<T>> tmpList = Population;
+		List<DNA> tmpList = Population;
 		Population = newPopulation;
 		newPopulation = tmpList;
 
@@ -107,7 +109,7 @@ public class GeneticAlgorithm<T>
 	/*
 	 * compare DNA follow fitness
 	 */
-	private int CompareDNA(DNA<T> a, DNA<T> b)
+	private int CompareDNA(DNA a, DNA b)
 	{
 		if (a.Fitness > b.Fitness)
 		{
@@ -136,7 +138,7 @@ public class GeneticAlgorithm<T>
 		 */
 		fitnessSum = 0;
 
-		DNA<T> best = Population[0];
+		DNA best = Population[0];
 
 		for (int i = 0; i < Population.Count; i++)
 		{
@@ -160,7 +162,7 @@ public class GeneticAlgorithm<T>
 	 * Roulette Wheel Selection
 	 * https://www.tutorialspoint.com/genetic_algorithms/genetic_algorithms_parent_selection.htm
 	 */
-	private DNA<T> ChooseParent()
+	private DNA ChooseParent()
 	{
 		double randomNumber = random.NextDouble() * fitnessSum;
 
@@ -174,6 +176,6 @@ public class GeneticAlgorithm<T>
 			randomNumber -= Population[i].Fitness;
 		}
 
-		return null;
+		return Population[0];
 	}
 }
