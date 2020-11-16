@@ -63,6 +63,8 @@ namespace GA
                 Update();
             }
             outGene(genericAlgorithm.BestGenes);
+            export(genericAlgorithm.BestGenes);
+            
             ConsoleKeyInfo keyinfo;
             do
             {
@@ -88,6 +90,7 @@ namespace GA
         static void Update()
         {
             genericAlgorithm.NewGeneration();
+            outGene(genericAlgorithm.BestGenes);
         }
 
         /*
@@ -174,31 +177,31 @@ namespace GA
 
 
             if (toan == TOAN_LESSON)
-                score ++;
+                score += 5;
             if (ly == LY_LESSON)
-                score ++;
+                score += 5;
             if (hoa == HOA_LESSON)
-                score ++;
+                score += 5;
             if (Biology == Biology_LESSON)
-                score ++;
+                score += 5;
             if (van == VAN_LESSON)
-                score ++;
+                score += 5;
             if (su == SU_LESSON)
-                score ++;
+                score += 5;
             if (dia == DIA_LESSON)
-                score ++;
+                score += 5;
             if (anh == ANH_LESSON)
-                score ++;
+                score += 5;
             if (theduc == THEDUC_LESSON)
-                score ++;
+                score += 5;
             if (tuchon == TUCHON_LESSON)
-                score ++;
+                score += 5;
             if (gdcn == GDCD_LESSON)
-                score ++;
+                score += 5;
             if (mythuat == MYTHUAT_LESSON)
-                score ++;
+                score += 5;
             if (congnghe == CONGNGHE_LESSON)
-                score ++;
+                score += 5;
             if((toan == TOAN_LESSON) && (ly == LY_LESSON) 
                 && (hoa == HOA_LESSON) && (Biology == Biology_LESSON) 
                 && (van == VAN_LESSON) && (su == SU_LESSON)
@@ -224,9 +227,6 @@ namespace GA
 
         static public void outGene(ClassOfTimetable[] genes)
         {
-            StreamWriter outputFitness = new StreamWriter(System.IO.Path.Combine(@"C:\Users\17520\Downloads\", "fitness.csv"));
-            outputFitness.WriteLine("{0},{1},{2},{3},{4},{5},{6}", 
-                "Lesson/Day", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
 
             Console.WriteLine();
 
@@ -273,19 +273,38 @@ namespace GA
             }
             Console.WriteLine("==============================================");
             Console.WriteLine();
-            for (int i = 0; i < MAX_LESSON; i++)
-            {
-                outputFitness.WriteLine("{0},{1},{2},{3},{4},{5},{6}",
-                    i + 1, timetable[0,i].idSubject, timetable[1,i].idSubject,
-                    timetable[2,i].idSubject, timetable[3,i].idSubject,  
-                    timetable[4,i].idSubject, timetable[5,i].idSubject);
-                
-            }
-            if (outputFitness != null)
-                outputFitness.Close();
 
         }
 
+        static void export(ClassOfTimetable[] genes)
+        {
+            StreamWriter outputFitness = new StreamWriter(System.IO.Path.Combine(@"C:\Users\17520\Downloads\", "fitness.csv"));
+            outputFitness.WriteLine("{0},{1},{2},{3},{4},{5},{6}",
+                "Lesson/Day", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+            Console.WriteLine();
+            for (int i = 0; i < MAX_DAY; i++)
+            {
+           
+                for (int j = i * MAX_LESSON; j < i * MAX_LESSON + MAX_LESSON; j++)
+                {
+                    timetable[i, j % MAX_LESSON] = genes[j];
+                }
+
+            }
+     
+            for (int i = 0; i < MAX_LESSON; i++)
+            {
+                outputFitness.WriteLine("{0},{1},{2},{3},{4},{5},{6}",
+                    i + 1, timetable[0, i].idSubject, timetable[1, i].idSubject,
+                    timetable[2, i].idSubject, timetable[3, i].idSubject,
+                    timetable[4, i].idSubject, timetable[5, i].idSubject);
+
+            }
+            if (outputFitness != null)
+                outputFitness.Close();
+            Console.WriteLine("Export sucess");
+
+        }
         static bool validDay(ClassOfTimetable class1, ClassOfTimetable class2, 
             ClassOfTimetable class3, ClassOfTimetable class4, ClassOfTimetable class5)
         {
